@@ -96,23 +96,28 @@
         }
 
         async function loadPhotos() {
-            const { data, error } = await supabase.storage.from('photos').list();
+    console.log("Loading photos..."); // Debugging log
 
-            if (error) {
-                console.error("Error loading photos:", error.message);
-                return;
-            }
+    const { data, error } = await supabase.storage.from('photos').list();
 
-            const gallery = document.getElementById("photo-gallery");
-            gallery.innerHTML = "";
+    if (error) {
+        console.error("Error loading photos:", error.message);
+        return;
+    }
 
-            data.forEach(photo => {
-                const img = document.createElement('img');
-                img.src = `${SUPABASE_URL}/storage/v1/object/public/photos/${photo.name}`;
-                img.alt = photo.name;
-                gallery.appendChild(img);
-            });
-        }
+    console.log("Photos found:", data); // Debugging log
+
+    const gallery = document.getElementById("photo-gallery");
+    gallery.innerHTML = ""; // Clear existing gallery
+
+    data.forEach(photo => {
+        const img = document.createElement('img');
+        img.src = `${SUPABASE_URL}/storage/v1/object/public/photos/${photo.name}`;
+        img.style.width = '200px';
+        img.style.margin = '10px';
+        gallery.appendChild(img);
+    });
+}
 
         window.onload = loadPhotos;
     </script>
