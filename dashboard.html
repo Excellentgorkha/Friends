@@ -27,31 +27,31 @@
 
     <h2>Photo Gallery</h2>
     <div id="photo-gallery"></div>
-
+   <button id="upload-button">Upload Photo</button>
+<input type="file" id="photo-file">
     <script>
         const SUPABASE_URL = "https://yshockchlvgmljegeizo.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzaG9ja2NobHZnbWxqZWdlaXpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI3MzY3NTcsImV4cCI6MjA1ODMxMjc1N30.TN-PqDxjqO4qh902xQtywn_et1IBql95x5vo0uHWPU0";
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        async function uploadPhoto() {
-    const fileInput = document.getElementById("photo-file");
-    const file = fileInput.files[0];
+        
 
-    if (!file) {
-        alert("Please select a file");
-        return;
-    }
+    document.getElementById("upload-button").addEventListener("click", () => {
+        console.log("Upload button clicked");
+        uploadPhoto();
+    });
 
-    const uniqueFileName = `${Date.now()}_${file.name}`; // Make filename unique
-    const { data, error } = await supabase.storage.from('photos').upload(uniqueFileName, file);
+    async function uploadPhoto() {
+        const fileInput = document.getElementById("photo-file");
+        const file = fileInput.files[0];
 
-    if (error) {
-        alert("Error uploading: " + error.message);
-    } else {
-        alert("Uploaded successfully!");
-        loadPhotos(); // Refresh gallery
-    }
+        if (!file) {
+            alert("Please select a file");
+            console.log("No file selected");
+            return;
+        }
 
+        console.log("File selected:", file.name);
     }
 
         async function deletePhoto() {
