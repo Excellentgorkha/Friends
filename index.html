@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Photo Gallery</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; background-color: #f4f4f4; }
+        .gallery { display: flex; flex-wrap: wrap; justify-content: center; }
+        .gallery img { width: 200px; margin: 10px; }
+        .admin-btn { padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>Public Photo Gallery</h1>
+    <button class="admin-btn" onclick="location.href='login.html'">Admin Login</button>
+    <div class="gallery" id="photo-gallery"></div>
+
+    <script>
+        const SUPABASE_URL = "https://yshockchlvgmljegeizo.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzaG9ja2NobHZnbWxqZWdlaXpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI3MzY3NTcsImV4cCI6MjA1ODMxMjc1N30.TN-PqDxjqO4qh902xQtywn_et1IBql95x5vo0uHWPU0";
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function loadPhotos() {
+            const { data, error } = await supabase.storage.from('photos').list();
+            if (error) {
+                console.error("Error loading photos:", error.message);
+                return;
+            }
+            const gallery = document.getElementById("photo-gallery");
+            gallery.innerHTML = "";
+            data.forEach(photo => {
+                const img = document.createElement('img');
+                img.src = `${SUPABASE_URL}/storage/v1/object/public/photos/${photo.name}`;
+                gallery.appendChild(img);
+            });
+        }
+
+        window.onload = loadPhotos;
+    </script>
+
+</body>
+  </html>
