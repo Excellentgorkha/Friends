@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); }
+        input, button { display: block; width: 90%; margin: 10px auto; padding: 10px; border-radius: 5px; border: 1px solid #ddd; }
+        button { background: #007bff; color: white; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>Admin Dashboard</h1>
+    <div class="container">
+        <h2>Upload Photo</h2>
+        <input type="file" id="photo-file">
+        <button onclick="uploadPhoto()">Upload</button>
+
+        <h2>Delete Photo</h2>
+        <input type="text" id="photo-name" placeholder="Enter photo name">
+        <button onclick="deletePhoto()">Delete</button>
+    </div>
+
+    <h2>Photo Gallery</h2>
+    <div id="photo-gallery"></div>
+
+    <script>
+        const SUPABASE_URL = "https://yshockchlvgmljegeizo.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzaG9ja2NobHZnbWxqZWdlaXpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI3MzY3NTcsImV4cCI6MjA1ODMxMjc1N30.TN-PqDxjqO4qh902xQtywn_et1IBql95x5vo0uHWPU0";
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function uploadPhoto() {
+            const fileInput = document.getElementById("photo-file");
+            const file = fileInput.files[0];
+            if (!file) return alert("Please select a file");
+
+            const { data, error } = await supabase.storage.from('photos').upload(file.name, file);
+            if (error) {
+                alert("Error uploading: " + error.message);
+            } else {
+                alert("Uploaded successfully!");
+                loadPhotos();
+            }
+        }
+
+        async function deletePhoto() {
+            const photoName = document.getElementById("photo-name").value;
+            const { error } = await supabase.storage.from('photos').remove([photoName]);
+            if (error) {
+                alert("Error deleting: " + error.message);
+            } else {
+                alert("Deleted successfully!");
+                loadPhotos();
+            }
+        }
+
+        async function loadPhotos() {
+            const { data, error } = await supabase.storage.from('photos').list();
+            if (error) return console.error(error.message);
+
+            const gallery = document.getElementById("photo-gallery");
+            gallery.innerHTML = "";
+            data.forEach(photo => {
+                const img = document.createElement('img');
+                img.src = `${SUPABASE_URL}/storage/v1/object/public/photos/${photo.name}`;
+                img.style.width = '200px';
+                gallery.appendChild(img);
+            });
+        }
+
+        window.onload = loadPhotos;
+    </script>
+
+</body>
+</html>
