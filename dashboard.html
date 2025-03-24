@@ -31,9 +31,25 @@
     <div class="gallery" id="photo-gallery"></div>
 
     <script>
-        const SUPABASE_URL = "https://yshockchlvgmljegeizo.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzaG9ja2NobHZnbWxqZWdlaXpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI3MzY3NTcsImV4cCI6MjA1ODMxMjc1N30.TN-PqDxjqO4qh902xQtywn_et1IBql95x5vo0uHWPU0";
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const SUPABASE_URL = "https://yshockchlvgmljegeizo.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlzaG9ja2NobHZnbWxqZWdlaXpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI3MzY3NTcsImV4cCI6MjA1ODMxMjc1N30.TN-PqDxjqO4qh902xQtywn_et1IBql95x5vo0uHWPU0";
+
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function testConnection() {
+        const { data, error } = await supabase.from('test_table').select('*');
+
+        if (error) {
+            console.error("Supabase Connection Failed:", error.message);
+            alert("Supabase is NOT connected! ❌");
+        } else {
+            console.log("Supabase Connection Successful ✅", data);
+            alert("Supabase is connected! ✅");
+        }
+    }
+
+    testConnection();
+                
 
         document.getElementById("upload-button").addEventListener("click", uploadPhoto);
         document.getElementById("delete-button").addEventListener("click", deletePhoto);
