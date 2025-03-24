@@ -34,44 +34,63 @@
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         async function uploadPhoto() {
-            const fileInput = document.getElementById("photo-file");
-            const file = fileInput.files[0];
-            if (!file) return alert("Please select a file");
+    const fileInput = document.getElementById("photo-file");
+    const file = fileInput.files[0];
 
-            const { data, error } = await supabase.storage.from('photos').upload(file.name, file);
-            if (error) {
-                alert("Error uploading: " + error.message);
-            } else {
-                alert("Uploaded successfully!");
-                loadPhotos();
-            }
-        }
+    if (!file) {
+        alert("Please select a file");
+        return;
+    }
+
+    const uniqueFileName = `${Date.now()}_${file.name}`; // Make filename unique
+    const { data, error } = await supabase.storage.from('photos').upload(uniqueFileName, file);
+
+    if (error) {
+        alert("Error uploading: " + error.message);
+    } else {
+        alert("Uploaded successfully!");
+        loadPhotos(); // Refresh gallery
+    }
+
+    }
 
         async function deletePhoto() {
-            const photoName = document.getElementById("photo-name").value;
-            const { error } = await supabase.storage.from('photos').remove([photoName]);
-            if (error) {
-                alert("Error deleting: " + error.message);
-            } else {
-                alert("Deleted successfully!");
-                loadPhotos();
-            }
-        }
+    const photoName = document.getElementById("photo-name").value.trim();
+
+    if (!photoName) {
+        alert("Enter the exact photo name to delete!");
+        return;
+    }
+
+    const { error } = await supabase.storage.from('photos').remove([photoName]);
+
+    if (error) {
+        alert("Error deleting: " + error.message);
+    } else {
+        alert("Deleted successfully!");
+        loadPhotos(); // Refresh gallery
+    }
+}
 
         async function loadPhotos() {
-            const { data, error } = await supabase.storage.from('photos').list();
-            if (error) return console.error(error.message);
+    const { data, error } = await supabase.storage.from('photos').list();
 
-            const gallery = document.getElementById("photo-gallery");
-            gallery.innerHTML = "";
-            data.forEach(photo => {
-                const img = document.createElement('img');
-                img.src = `${SUPABASE_URL}/storage/v1/object/public/photos/${photo.name}`;
-                img.style.width = '200px';
-                gallery.appendChild(img);
-            });
-        }
+    if (error) {
+        console.error("Error loading photos:", error.message);
+        return;
+    }
 
+    const gallery = document.getElementById("photo-gallery");
+    gallery.innerHTML = "";
+
+    data.forEach(photo => {
+        const img = document.createElement('img');
+        img.src = `${SUPABASE_URL}/storage/v1/object/public/photos/${photo.name}`;
+        img.style.width = '200px';
+        img.style.margin = '10px';
+        gallery.appendChild(img);
+    });
+}
         window.onload = loadPhotos;
     </script>
 
